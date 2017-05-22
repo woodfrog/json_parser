@@ -136,7 +136,7 @@ func (t *TokenStream) _read_escaped(end string) string {
 	for !t.input.is_eof() {
 		s := string(t.input.next()) // read the next rune, convert to utf-8 string
 		if escaped {                // the previous s was "\\", the current rune should be escaped
-			result += s
+			result += ("\\" + s)
 			escaped = false
 		} else if s == "\\" {
 			escaped = true
@@ -205,6 +205,8 @@ func main() {
 	var ts TokenStream
 	ts.set_up("test.json")
 	for !ts.is_eof() {
+		s := ts.peek()
+		fmt.Println(s)
 		t := ts.next()
 		fmt.Println(t)
 	}
