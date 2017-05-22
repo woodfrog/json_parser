@@ -201,13 +201,13 @@ func (t *TokenStream) is_eof() bool {
 	return t.peek().t_type == "eof" // check eof through the type of the current token
 }
 
-func main() {
-	var ts TokenStream
-	ts.set_up("test.json")
-	for !ts.is_eof() {
-		s := ts.peek()
-		fmt.Println(s)
-		t := ts.next()
-		fmt.Println(t)
-	}
-}
+// func main() {
+// 	var ts TokenStream
+// 	ts.set_up("test.json")
+// 	for !ts.is_eof() {
+// 		s := ts.peek()
+// 		fmt.Println(s)
+// 		t := ts.next()
+// 		fmt.Println(t)
+// 	}
+// }
