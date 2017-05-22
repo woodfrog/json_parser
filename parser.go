@@ -130,7 +130,7 @@ func (p *Parser) html_punc(punc string) {
 }
 
 func (p *Parser) html_new_line() {
-	p.html += "<br>"
+	p.html += "\n"
 }
 
 func (p *Parser) html_tab() {
