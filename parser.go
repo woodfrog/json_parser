@@ -4,6 +4,18 @@ import (
 	"fmt"
 )
 
+var htmlColorMap = map[string]string{
+	"{":   "\"color:rgb(0, 0, 255)\"",
+	"}":   "\"color:rgb(0, 0, 255)\"",
+	"[":   "\"color:rgb(138, 43, 226)\"",
+	"]":   "\"color:rgb(138, 43, 226)\"",
+	":":   "\"color:rgb(0, 0, 0)\"",
+	",":   "\"color:rgb(46, 139, 87)\"",
+	"kw":  "\"color:rgb(255, 127, 80)\"",
+	"str": "\"color:rgb(210, 105, 30)\"",
+	"num": "\"color:rgb(255, 0, 0)\"",
+}
+
 type Parser struct {
 	tokens     *TokenStream
 	html       string
@@ -111,22 +123,22 @@ func (p *Parser) parse_value() {
 func (p *Parser) html_string() {
 	str_tok := p.tokens.next() // read and consume
 	fmt_str := "&quot;" + str_tok.value.(string) + "&quot;"
-	p.html += fmt_str
+	p.html += p.html_wrap_color("str", fmt_str)
 }
 
 func (p *Parser) html_num() {
 	num_tok := p.tokens.next() // read and consume
-	p.html += num_tok.value.(string)
+	p.html += p.html_wrap_color("num", num_tok.value.(string))
 }
 
 func (p *Parser) html_kw() {
 	kw_tok := p.tokens.next()
-	p.html += kw_tok.value.(string)
+	p.html += p.html_wrap_color("kw", kw_tok.value.(string))
 }
 
 func (p *Parser) html_punc(punc string) {
 	p.tokens.next() // consume the punc token
-	p.html += punc
+	p.html += p.html_wrap_color(punc, punc)
 }
 
 func (p *Parser) html_new_line() {
@@ -137,6 +149,11 @@ func (p *Parser) html_tab() {
 	for i := 0; i < p.num_indent; i++ {
 		p.html += "\t"
 	}
+}
+
+func (p *Parser) html_wrap_color(tk_type string, raw_s string) string {
+	wrapped_s := "<span style=" + htmlColorMap[tk_type] + ">" + raw_s + "</span>"
+	return wrapped_s
 }
 
 func main() {
