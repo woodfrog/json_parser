@@ -36,13 +36,17 @@ func (p *Parser) is_punc(punc string) bool {
 func (p *Parser) skip_punc(punc string) {
 	if p.is_punc(punc) {
 		p.html_punc(punc) // the consuming of token is deferred to the html function
+	} else {
+		tok := p.tokens.peek()
+		msg := "expected punctuation " + punc + " but got " + tok.value.(string)
+		p.tokens.input.err_msg(msg)
 	}
 }
 
 // return the string of the html output
 func (p *Parser) parse_toplevel() string {
 	p.html = "<span style=\"font-family:monospace; white-space:pre\">\n"
-	p.parse_object()
+	p.parse_value()
 	p.html += "\n</span>"
 	return p.html
 }
@@ -66,7 +70,7 @@ func (p *Parser) parse_object() {
 			p.skip_punc(",")
 			p.html_new_line()
 		}
-		if p.is_punc("}") {
+		if p.is_punc("}") { // allow an object end with a comma
 			p.html_new_line()
 			p.num_indent -= 1
 			p.html_tab()
@@ -95,7 +99,7 @@ func (p *Parser) parse_array() {
 		} else {
 			p.skip_punc(",")
 		}
-		if p.is_punc("]") {
+		if p.is_punc("]") { // allow an array to end with a comma
 			p.html_punc("]")
 			break
 		}
