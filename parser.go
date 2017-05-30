@@ -5,15 +5,16 @@ import (
 )
 
 var htmlColorMap = map[string]string{
-	"{":   "\"color:rgb(0, 0, 255)\"",
-	"}":   "\"color:rgb(0, 0, 255)\"",
-	"[":   "\"color:rgb(138, 43, 226)\"",
-	"]":   "\"color:rgb(138, 43, 226)\"",
-	":":   "\"color:rgb(0, 0, 0)\"",
-	",":   "\"color:rgb(46, 139, 87)\"",
-	"kw":  "\"color:rgb(255, 127, 80)\"",
-	"str": "\"color:rgb(210, 105, 30)\"",
-	"num": "\"color:rgb(255, 0, 0)\"",
+	"{":       "\"color:rgb(0, 0, 255)\"",
+	"}":       "\"color:rgb(0, 0, 255)\"",
+	"[":       "\"color:rgb(138, 43, 226)\"",
+	"]":       "\"color:rgb(138, 43, 226)\"",
+	":":       "\"color:rgb(0, 0, 0)\"",
+	",":       "\"color:rgb(46, 139, 87)\"",
+	"kw":      "\"color:rgb(255, 127, 80)\"",
+	"str":     "\"color:rgb(210, 105, 30)\"",
+	"num":     "\"color:rgb(255, 0, 0)\"",
+	"escaped": "\"color:rgb(0, 200, 50)\"",
 }
 
 type Parser struct {
@@ -78,7 +79,7 @@ func (p *Parser) parse_object() {
 			break
 		}
 		p.html_tab()
-		p.html_string()
+		p.parse_string()
 		p.skip_punc(":")
 		p.parse_value()
 	}
@@ -116,18 +117,79 @@ func (p *Parser) parse_value() {
 	case p.is_punc("["):
 		p.parse_array()
 	case p.tokens.peek().t_type == "str":
-		p.html_string()
+		p.parse_string()
 	case p.tokens.peek().t_type == "num":
 		p.html_num()
 	case p.tokens.peek().t_type == "kw":
 		p.html_kw()
+	default:
+		p.tokens.input.err_msg("invalid token! Expected a JSON value")
+	}
+}
+
+func (p *Parser) parse_string() {
+	tok := p.tokens.peek()
+	if tok.t_type == "str" {
+		p.html_string()
+	} else {
+		p.tokens.input.err_msg("expected string but got token type" + tok.t_type)
 	}
 }
 
 func (p *Parser) html_string() {
 	str_tok := p.tokens.next() // read and consume
-	fmt_str := "&quot;" + str_tok.value.(string) + "&quot;"
+	fmt_str := p._html_special_string(str_tok.value.(string))
 	p.html += p.html_wrap_color("str", fmt_str)
+}
+
+func (p *Parser) _html_special_string(s string) string {
+	new_s := ""
+	escaped := false
+	escaped_count := 0
+	for _, r := range s {
+		added := ""
+		if escaped == false {
+			if string(r) == "\\" {
+				escaped = true
+				escaped_count += 1
+				added = "<span style=" + htmlColorMap["escaped"] + ">" + string(r)
+			} else {
+				added = p._html_s_trans(string(r))
+			}
+		} else { // under escaped mode
+			if string(r) == "u" {
+				escaped_count += 4
+			}
+			added = p._html_s_trans(string(r))
+			escaped_count -= 1
+			if escaped_count == 0 {
+				escaped = false
+				added += "</span>"
+			}
+		}
+		new_s += added
+	}
+	new_s = "&quot;" + new_s + "&quot;"
+	return new_s
+}
+
+func (p *Parser) _html_s_trans(c string) string {
+	trans := ""
+	switch {
+	case c == "<":
+		trans = "&lt;"
+	case c == ">":
+		trans = "&gt;"
+	case c == "&":
+		trans = "&amp;"
+	case c == "\"":
+		trans = "&quot;"
+	case c == "'":
+		trans = "&apos;"
+	default:
+		trans = c
+	}
+	return trans
 }
 
 func (p *Parser) html_num() {
@@ -162,7 +224,7 @@ func (p *Parser) html_wrap_color(tk_type string, raw_s string) string {
 
 func main() {
 	var ts TokenStream
-	ts.set_up("test.json")
+	ts.set_up("test2.json")
 	var p Parser
 	p.tokens = &ts
 	result := p.parse_toplevel()
