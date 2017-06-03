@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"os"
 )
 
+/*RGB color Table, change the color here for different components of JSON text*/
 var htmlColorMap = map[string]string{
 	"{":       "\"color:rgb(0, 0, 255)\"",
 	"}":       "\"color:rgb(0, 0, 255)\"",
@@ -142,11 +144,12 @@ func (p *Parser) html_string() {
 	p.html += p.html_wrap_color("str", fmt_str)
 }
 
+/*Handle the different color of escaped strings*/
 func (p *Parser) _html_special_string(s string) string {
 	new_s := ""
 	escaped := false
 	escaped_count := 0
-	for _, r := range s {
+	for _, r := range s { // note: here r is of type rune, not string
 		added := ""
 		if escaped == false {
 			if string(r) == "\\" {
@@ -173,6 +176,7 @@ func (p *Parser) _html_special_string(s string) string {
 	return new_s
 }
 
+/*Deal with the special string that cannot be directly displayed in HTML files*/
 func (p *Parser) _html_s_trans(c string) string {
 	trans := ""
 	switch {
@@ -223,10 +227,14 @@ func (p *Parser) html_wrap_color(tk_type string, raw_s string) string {
 }
 
 func main() {
+	if len(os.Args) < 2 {
+		panic("No enough command line arguments, should specify the input file path")
+	}
+	filename := os.Args[1]
 	var ts TokenStream
-	ts.set_up("test2.json")
+	ts.set_up(filename) // set up tokenizer
 	var p Parser
-	p.tokens = &ts
+	p.tokens = &ts // set up our simple parser
 	result := p.parse_toplevel()
-	fmt.Println(result)
+	fmt.Println(result) // print the result to stdout
 }

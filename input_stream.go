@@ -23,7 +23,7 @@ type InputStream struct {
 /* Open the file and initialize the pos, col, line variables*/
 func (is *InputStream) open_file(fimename string) {
 	f, err := os.Open(fimename)
-	check(err)
+	check(err) // check whether the file is opened correctly
 	is.rd = bufio.NewReader(f)
 	is.line = 1
 	is.rune_size = -1 // not eof at the first beginning,
