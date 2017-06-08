@@ -20,7 +20,7 @@ var htmlColorMap = map[string]string{
 }
 
 type Parser struct {
-	tokens     *TokenStream
+	tokens     *TokenStream // the token stream to be processed by the parser
 	html       string
 	num_indent int
 }
@@ -46,7 +46,7 @@ func (p *Parser) skip_punc(punc string) {
 	}
 }
 
-// return the string of the html output
+// the top-level function. Return the string of the html output
 func (p *Parser) parse_toplevel() string {
 	p.html = "<span style=\"font-family:monospace; white-space:pre\">\n"
 	p.parse_value()
@@ -176,7 +176,7 @@ func (p *Parser) _html_special_string(s string) string {
 	return new_s
 }
 
-/*Deal with the special string that cannot be directly displayed in HTML files*/
+/* Deal with the special string that cannot be directly displayed in HTML files */
 func (p *Parser) _html_s_trans(c string) string {
 	trans := ""
 	switch {

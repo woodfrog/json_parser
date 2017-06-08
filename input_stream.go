@@ -29,6 +29,7 @@ func (is *InputStream) open_file(fimename string) {
 	is.rune_size = -1 // not eof at the first beginning,
 }
 
+/* Peek at the current rune without consuming it*/
 func (is *InputStream) peek() rune {
 	r, size, _ := is.rd.ReadRune() // don't check the eof, is_eof() will handle it
 	is.rune_size = size
@@ -36,6 +37,7 @@ func (is *InputStream) peek() rune {
 	return r
 }
 
+/* Return the current rune and consume it */
 func (is *InputStream) next() rune {
 	r, size, _ := is.rd.ReadRune() // don't check the eof, is_eof() will handle it
 	is.rune_size = size

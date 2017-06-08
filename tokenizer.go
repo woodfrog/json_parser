@@ -25,7 +25,7 @@ func (t Token) String() string {
 }
 
 type TokenStream struct {
-	input    *InputStream
+	input    *InputStream // the rune input stream for producing the token stream
 	current  Token
 	keywords []string
 	puncs    []string
@@ -47,7 +47,8 @@ func (t *TokenStream) _is_valid(candidate string, lst []string) bool {
 	return false
 }
 
-// the core function for the tokenizer
+// the core function for the tokenizer, to read the next token until the
+// input stream is exhausted or some errors occur
 func (ts *TokenStream) read_next() Token {
 	ts.read_while(is_whitespace) // skip(ignore) all whitespace
 	if ts.input.is_eof() {
@@ -101,7 +102,8 @@ func is_letter(r rune) bool {
 // 	3. numbers, including integers, floating point numbers and exponent
 // 	4. keywords like true, false and null.
 
-// should handle the situation of reading escaped
+// This is the helper function for reading continuous runes that satisfy the predicate
+// until getting the first outlier, and all the runes compose the string to be returned.
 func (t *TokenStream) read_while(predicate func(rune) bool) string {
 	str := ""
 	for !t.input.is_eof() && predicate(t.input.peek()) {
@@ -110,6 +112,7 @@ func (t *TokenStream) read_while(predicate func(rune) bool) string {
 	return str
 }
 
+// should handle the situation of reading escaped
 func (t *TokenStream) read_string() Token {
 	s := t._read_escaped("\"")
 	string_tk := Token{t_type: "str", value: s}
@@ -200,6 +203,8 @@ func (t *TokenStream) next() Token {
 func (t *TokenStream) is_eof() bool {
 	return t.peek().t_type == "eof" // check eof through the type of the current token
 }
+
+/*For testing tokenizer*/
 
 // func main() {
 // 	var ts TokenStream
