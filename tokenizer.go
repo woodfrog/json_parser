@@ -71,7 +71,7 @@ func (ts *TokenStream) read_next() Token {
 
 func is_num(r rune) bool {
 	return unicode.IsDigit(r) || string(r) == "+" || string(r) == "-" ||
-		string(r) == "." || string(r) == "e"
+		string(r) == "." || string(r) == "e" || string(r) == "E"
 }
 
 func is_whitespace(r rune) bool {
