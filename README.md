@@ -2,11 +2,11 @@
 
 ## Introduction
 
-This project contains a JSON parser which converts a JSON input to a colorized HTML file. The parser's structure is based on [How to Implement a Programming Language](http://lisperator.net/pltut/). This project is based on [Go language](https://golang.org), so you need to setup Go environment before running it.
+This project contains a JSON parser that transforms a JSON file to a formatted HTML file with colour highlights. The structure of the parser follows a top-down approach inspired by the tutorial [How to Implement a Programming Language](http://lisperator.net/pltut/). The project is implemented in [Go language](https://golang.org) and requires Go environment to be setup before running the program.
 
 ## How To Run
 
-You can either build the project and run the executable file or directly run the scripts.
+Two methods are provided to run the program. Either build from binary and run the executable file or directly run the scripts.
 
 ### a). Build The Binary And Run
 
@@ -20,21 +20,21 @@ go build
 ~~~
 
 ### b). Run Without Build
-This project can also run without building it. You need to specify each script in the command and provide input and output file names.
+Please specify each script in the command and provide the input and output file names.
 ~~~
 go run parser.go input_stream.go tokenizer.go inputFileName.json > outputFileName.html
 ~~~
 
 ## Design Review
 ### Basic Idea
-The basic idea comes from recursive descent parser. A recursive descent parser is top-down parser built on a set of mutually recursive procedures. Each procedure implements one rule of the grammar.[2] Since JSON has strict syntax rules and these rules are corresponding to HTML outputs, a recursive descent parser can be used to check the grammar and convert it to an HTML string.
+The basic idea originates from the recursive descent parser, which is a top-down parser built on a set of mutually recursive procedures. Each procedure implements a single rule of the grammar.[2] Since JSON has strict syntax rules that corresponds to HTML outputs, a recursive descent parser can be applied to validate and convert JSON grammar to an HTML string.
 
 ### Structure
-This projects contain the following three components. Input Streaming, Tokenizer and Parser. These components are also executed in this order. This section talks about what these components are doing.
+This project contains the following three components: Input Streaming, Tokenizer, and Parser. These components are executed in the listed order. This section belows presents the objectives of each component.
 
 #### 1. Input Streaming
 
-Input Streaming provides two major functions `peek()` and `next()` to read the input stream one rune by another. `peek()` checks the next token without consuming it. It decides the beginning of the next token and helps the tokenizer to choose different tokenizing logic. `next()` moves the pointer to the next token.
+Input Streaming provides two major functions `peek()` and `next()` to read the input stream one rune by another. `peek()` checks the next token without consuming it and decides the beginning of the next token, which helps the tokenizer to choose different tokenizing logic. `next()` moves the pointer to the next token.
 
 #### 2. Tokenizer
 
@@ -42,10 +42,10 @@ Tokenizer seperates the whole input text into a list of valid tokens. If there i
 
 #### 3. Parser 
 
-The idea of "parser" in this project comes from recursive descent parser[2], but it is not a real parser. Parser in this project does not generate the abstract syntax tree (AST). It only checks the correctness of the token list and convert the token list into an HTML string. If there is syntax error, the parsing phase would fail and print corresponding error messages on stdout.
+The parser in this project borrows the idea from a recursive descent parser[2], but does not fully implememt it. The parser implemented only checks the correctness of the token list and converts the token list into an HTML string but does not generate the abstract syntax tree (AST). If there is a syntax error, the parsing phase would fail and print corresponding error messages on stdout.
 
 ## Other Notes
-1. Any valid JSON value to be the top-level object. In this case, an array can also be at top-level.[3]
+1. Any valid JSON value can be the top-level object. In this case, an array can also be at the top-level.[3]
 
 2. The color mappings for different components are defined in `htmlColorMap` variable in `parser.go`. You may change the color mapping as you like.
 
