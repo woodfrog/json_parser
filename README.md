@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This project contains a JSON parser that transforms a JSON file to a formatted HTML file with colour highlights. The structure of the parser follows a top-down approach inspired by the tutorial [How to Implement a Programming Language](http://lisperator.net/pltut/). The project is implemented in [Go language](https://golang.org) and requires Go environment to be setup before running the program.
+This project contains a JSON parser that transforms a JSON file to a formatted HTML file with colour highlights. The structure of the parser follows a top-down approach inspired by the tutorial [How to Implement a Programming Language](http://lisperator.net/pltut/). The project is implemented in [Go language](https://golang.org) and requires Go environment to be set up before running the program.
 
 ## How To Run
 
